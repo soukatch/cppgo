@@ -6,6 +6,16 @@ import (
 	"sort"
 )
 
+// Returns an iterator to the beginning of the sequence represented by c.
+func Begin[T any](c []T) *T {
+	return &c[0]
+}
+
+// Returns an iterator one past the end of the sequence represented by c.
+func End[T any](c []T) *T {
+	return &c[len(c)]
+}
+
 // Checks if unary predicate p returns true for all elements in the range
 // [first, last).
 func AllOf[T any](r []T, first, last int, p func(T) bool) bool {
@@ -73,4 +83,83 @@ func UpperBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int)
 		return comp(r[i], value) == 1
 	})
 	return &r[first]
+}
+
+// Searches the range [first, last) for two consecutive equal elements. Returns
+// an iterator to the first of the first pair of identical elements if found,
+// that is, the first iterator it such that *it == *(it + 1); last otherwise.
+func AdjacentFind[T comparable](r []T, first, last int) *T {
+	if first == last {
+		return &r[last]
+	}
+
+	for next := first + 1; next != last; {
+		if r[first] == r[next] {
+			return &r[first]
+		}
+		next++
+		first++
+	}
+
+	return &r[last]
+}
+
+// Searches the range [first, last) for two consecutive equal elements. Returns
+// an iterator to the first of the first pair of identical elements if found,
+// that is, the first iterator it such that p(*it, *(it + 1)) != false; last
+// otherwise.
+func AdjacentFindFunc[T any](r []T, first, last int, p func(T, T) bool) *T {
+	if first == last {
+		return &r[last]
+	}
+
+	for next := first + 1; next != last; {
+		if p(r[first], r[next]) {
+			return &r[first]
+		}
+		next++
+		first++
+	}
+
+	return &r[last]
+}
+
+func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) *T {
+	for {
+		it := first
+		for s_it := s_first; ; {
+			if s_it == s_last {
+				return &r1[first]
+			}
+			if it == last {
+				return &r1[last]
+			}
+			if r1[it] != r2[s_it] {
+				break
+			}
+			it++
+			s_it++
+		}
+		first++
+	}
+}
+
+func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T) bool) *T {
+	for {
+		it := first
+		for s_it := s_first; ; {
+			if s_it == s_last {
+				return &r1[first]
+			}
+			if it == last {
+				return &r1[last]
+			}
+			if !p(r1[it], r2[s_it]) {
+				break
+			}
+			it++
+			s_it++
+		}
+		first++
+	}
 }
