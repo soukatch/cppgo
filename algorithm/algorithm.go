@@ -123,3 +123,43 @@ func AdjacentFindFunc[T any](r []T, first, last int, p func(T, T) bool) *T {
 
 	return &r[last]
 }
+
+func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) *T {
+	for {
+		it := first
+		for s_it := s_first; ; {
+			if s_it == s_last {
+				return &r1[first]
+			}
+			if it == last {
+				return &r1[last]
+			}
+			if r1[it] != r2[s_it] {
+				break
+			}
+			it++
+			s_it++
+		}
+		first++
+	}
+}
+
+func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T) bool) *T {
+	for {
+		it := first
+		for s_it := s_first; ; {
+			if s_it == s_last {
+				return &r1[first]
+			}
+			if it == last {
+				return &r1[last]
+			}
+			if !p(r1[it], r2[s_it]) {
+				break
+			}
+			it++
+			s_it++
+		}
+		first++
+	}
+}
