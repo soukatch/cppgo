@@ -163,3 +163,62 @@ func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T
 		first++
 	}
 }
+
+func SearchN[T comparable](r []T, first, last, count int, value T) *T {
+	if count <= 0 {
+		return &r[first]
+	}
+
+	for ; first != last; first++ {
+		if r[first] != value {
+			continue
+		}
+
+		candidate := first
+
+		for cur_count := 1; ; cur_count++ {
+			if cur_count >= count {
+				return &r[candidate]
+			}
+
+			first++
+			if first == last {
+				return &r[last]
+			}
+
+			if r[first] != value {
+				break
+			}
+		}
+	}
+	return &r[last]
+}
+
+func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) bool) *T {
+	if count <= 0 {
+		return &r[first]
+	}
+
+	for ; first != last; first++ {
+		if !p(r[first], value) {
+			continue
+		}
+
+		candidate := first
+
+		for cur_count := 1; ; cur_count++ {
+			if cur_count >= count {
+				return &r[candidate]
+			}
+
+			if first++; first == last {
+				return &r[last]
+			}
+
+			if !p(r[first], value) {
+				break
+			}
+		}
+	}
+	return &r[last]
+}
