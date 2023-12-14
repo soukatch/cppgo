@@ -7,132 +7,132 @@ import (
 )
 
 // Returns an iterator to the beginning of the sequence represented by c.
-func Begin[T any](c []T) *T {
-	return &c[0]
+func Begin[T any](c []T) int {
+	return 0
 }
 
 // Returns an iterator one past the end of the sequence represented by c.
-func End[T any](c []T) *T {
-	return &c[len(c)]
+func End[T any](c []T) int {
+	return len(c)
 }
 
 // Checks if unary predicate p returns true for all elements in the range
-// [first, last).
+// r[first, last).
 func AllOf[T any](r []T, first, last int, p func(T) bool) bool {
-	return FindIfNot(r, first, last, p) == &r[last]
+	return FindIfNot(r, first, last, p) == last
 }
 
 // Checks if unary predicate p returns true for at least one element in the
-// range [first, last).
+// range r[first, last).
 func AnyOf[T any](r []T, first, last int, p func(T) bool) bool {
-	return FindIf(r, first, last, p) != &r[last]
+	return FindIf(r, first, last, p) != last
 }
 
 // Checks if unary predicate p returns true for no elements in the range
-// [first, last).
+// r[first, last).
 func NoneOf[T any](r []T, first, last int, p func(T) bool) bool {
-	return FindIf(r, first, last, p) == &r[last]
+	return FindIf(r, first, last, p) == last
 }
 
 // Searches for an element equal to value using operator==.
-func Find[T comparable](r []T, first, last int, value T) *T {
-	return &r[slices.Index(r[first:last], value)]
+func Find[T comparable](r []T, first, last int, value T) int {
+	return slices.Index(r[first:last], value)
 }
 
 // Searches for an element for which predicate p returns true.
-func FindIf[T any](r []T, first, last int, p func(T) bool) *T {
-	return &r[slices.IndexFunc(r[first:last], p)]
+func FindIf[T any](r []T, first, last int, p func(T) bool) int {
+	return slices.IndexFunc(r[first:last], p)
 }
 
 // Searches for an element for which predicate q returns false.
-func FindIfNot[T any](r []T, first, last int, q func(T) bool) *T {
-	return &r[slices.IndexFunc(r[first:last], func(x T) bool { return !q(x) })]
+func FindIfNot[T any](r []T, first, last int, q func(T) bool) int {
+	return slices.IndexFunc(r[first:last], func(x T) bool { return !q(x) })
 }
 
-// Returns an iterator pointing to the first element in the range [first, last)
+// Returns an iterator pointing to the first element in the range r[first, last)
 // such that element >= value, or last if no such element is found by invoking
 // slices.BinarySearch().
-func LowerBound[T cmp.Ordered](r []T, first, last int, value T) *T {
+func LowerBound[T cmp.Ordered](r []T, first, last int, value T) int {
 	first, _ = slices.BinarySearch(r[first:last], value)
-	return &r[first]
+	return first
 }
 
-// Returns an iterator pointing to the first element in the range [first, last)
+// Returns an iterator pointing to the first element in the range r[first, last)
 // such that comp(element, value) is false, or last if no such element is found
 // by invoking slices.BinarySearch().
-func LowerBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int) *T {
+func LowerBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int) int {
 	first, _ = slices.BinarySearchFunc(r[first:last], value, comp)
-	return &r[first]
+	return first
 }
 
-// Returns an iterator pointing to the first element in the range [first, last)
+// Returns an iterator pointing to the first element in the range r[first, last)
 // such that value < element, or last if no such element is found, by invoking
 // sort.Search().
-func UpperBound[T cmp.Ordered](r []T, first, last int, value T) *T {
+func UpperBound[T cmp.Ordered](r []T, first, last int, value T) int {
 	first = sort.Search(len(r[first:last]), func(i int) bool {
 		return r[i] > value
 	})
-	return &r[first]
+	return first
 }
 
-// Returns an iterator pointing to the first element in the range [first, last)
+// Returns an iterator pointing to the first element in the range r[first, last)
 // such that comp(element, value) is true, or last if no such element is found,
 // by invoking sort.Search().
-func UpperBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int) *T {
+func UpperBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int) int {
 	first = sort.Search(len(r[first:last]), func(i int) bool {
 		return comp(r[i], value) == 1
 	})
-	return &r[first]
+	return first
 }
 
 // Searches the range [first, last) for two consecutive equal elements. Returns
 // an iterator to the first of the first pair of identical elements if found,
-// that is, the first iterator it such that *it == *(it + 1); last otherwise.
-func AdjacentFind[T comparable](r []T, first, last int) *T {
+// that is, the first iterator it such that r[it] == r[it + 1]; last otherwise.
+func AdjacentFind[T comparable](r []T, first, last int) int {
 	if first == last {
-		return &r[last]
+		return last
 	}
 
 	for next := first + 1; next != last; {
 		if r[first] == r[next] {
-			return &r[first]
+			return first
 		}
 		next++
 		first++
 	}
 
-	return &r[last]
+	return last
 }
 
-// Searches the range [first, last) for two consecutive equal elements. Returns
+// Searches the range r[first, last) for two consecutive equal elements. Returns
 // an iterator to the first of the first pair of identical elements if found,
 // that is, the first iterator it such that p(*it, *(it + 1)) != false; last
 // otherwise.
-func AdjacentFindFunc[T any](r []T, first, last int, p func(T, T) bool) *T {
+func AdjacentFindFunc[T any](r []T, first, last int, p func(T, T) bool) int {
 	if first == last {
-		return &r[last]
+		return last
 	}
 
 	for next := first + 1; next != last; {
 		if p(r[first], r[next]) {
-			return &r[first]
+			return first
 		}
 		next++
 		first++
 	}
 
-	return &r[last]
+	return last
 }
 
-func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) *T {
+func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) int {
 	for {
 		it := first
 		for s_it := s_first; ; {
 			if s_it == s_last {
-				return &r1[first]
+				return first
 			}
 			if it == last {
-				return &r1[last]
+				return last
 			}
 			if r1[it] != r2[s_it] {
 				break
@@ -144,15 +144,15 @@ func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) *T {
 	}
 }
 
-func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T) bool) *T {
+func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T) bool) int {
 	for {
 		it := first
 		for s_it := s_first; ; {
 			if s_it == s_last {
-				return &r1[first]
+				return first
 			}
 			if it == last {
-				return &r1[last]
+				return last
 			}
 			if !p(r1[it], r2[s_it]) {
 				break
@@ -164,9 +164,9 @@ func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T
 	}
 }
 
-func SearchN[T comparable](r []T, first, last, count int, value T) *T {
+func SearchN[T comparable](r []T, first, last, count int, value T) int {
 	if count <= 0 {
-		return &r[first]
+		return first
 	}
 
 	for ; first != last; first++ {
@@ -178,12 +178,12 @@ func SearchN[T comparable](r []T, first, last, count int, value T) *T {
 
 		for cur_count := 1; ; cur_count++ {
 			if cur_count >= count {
-				return &r[candidate]
+				return candidate
 			}
 
 			first++
 			if first == last {
-				return &r[last]
+				return last
 			}
 
 			if r[first] != value {
@@ -191,12 +191,12 @@ func SearchN[T comparable](r []T, first, last, count int, value T) *T {
 			}
 		}
 	}
-	return &r[last]
+	return last
 }
 
-func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) bool) *T {
+func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) bool) int {
 	if count <= 0 {
-		return &r[first]
+		return first
 	}
 
 	for ; first != last; first++ {
@@ -208,11 +208,11 @@ func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) boo
 
 		for cur_count := 1; ; cur_count++ {
 			if cur_count >= count {
-				return &r[candidate]
+				return candidate
 			}
 
 			if first++; first == last {
-				return &r[last]
+				return last
 			}
 
 			if !p(r[first], value) {
@@ -220,5 +220,5 @@ func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) boo
 			}
 		}
 	}
-	return &r[last]
+	return last
 }
