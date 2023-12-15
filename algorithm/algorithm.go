@@ -2,6 +2,7 @@ package algorithm
 
 import (
 	"cmp"
+	"gocpp/utility"
 	"slices"
 	"sort"
 )
@@ -221,4 +222,40 @@ func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) boo
 		}
 	}
 	return last
+}
+
+func Mismatch[T comparable](r1, r2 []T, first1, last1, first2 int) utility.Pair[int, int] {
+	for first1 != last1 && r1[first1] == r1[first2] {
+		first1++
+		first2++
+	}
+
+	return utility.MakePair(first1, first2)
+}
+
+func MismatchFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) bool) utility.Pair[int, int] {
+	for first1 != last1 && p(r1[first1], r2[first2]) {
+		first1++
+		first2++
+	}
+
+	return utility.MakePair(first1, first2)
+}
+
+func Mismatch2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) utility.Pair[int, int] {
+	for first1 != last1 && first2 != last2 && r1[first1] == r1[first2] {
+		first1++
+		first2++
+	}
+
+	return utility.MakePair(first1, first2)
+}
+
+func MismatchFunc2[T any](r1, r2 []T, first1, last1, first2, last2 int, p func(T, T) bool) utility.Pair[int, int] {
+	for first1 != last1 && first2 != last2 && p(r1[first1], r2[first2]) {
+		first1++
+		first2++
+	}
+
+	return utility.MakePair(first1, first2)
 }
