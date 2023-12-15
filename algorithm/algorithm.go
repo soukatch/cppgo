@@ -349,3 +349,18 @@ func CopyIf[T any](r1, r2 []T, first, last, d_first int, pred func(T) bool) int 
 
 	return d_first
 }
+
+func CopyN[T any](r1, r2 []T, first, count, result int) int {
+	if count > 0 {
+		r2[result] = r1[first]
+		first++
+		result++
+		for i := 1; i != count; i++ {
+			r2[result] = r1[first]
+			first++
+			result++
+		}
+	}
+
+	return result
+}
