@@ -327,3 +327,25 @@ func CountIf[T any](r []T, first, last int, p func(T) bool) int {
 	}
 	return ret
 }
+
+func Copy[T any](r1, r2 []T, first, last, d_first int) int {
+	for first != last {
+		r2[d_first] = r1[first]
+		first++
+		d_first++
+	}
+
+	return d_first
+}
+
+func CopyIf[T any](r1, r2 []T, first, last, d_first int, pred func(T) bool) int {
+	for first != last {
+		if pred(r1[first]) {
+			r2[d_first] = r1[first]
+			d_first++
+		}
+		first++
+	}
+
+	return d_first
+}
