@@ -307,3 +307,23 @@ func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) boo
 	}
 	return last
 }
+
+func Count[T comparable](r []T, first, last int, value T) int {
+	ret := int(0)
+	for ; first != last; first++ {
+		if r[first] == value {
+			ret++
+		}
+	}
+	return ret
+}
+
+func CountIf[T any](r []T, first, last int, p func(T) bool) int {
+	ret := int(0)
+	for ; first != last; first++ {
+		if p(r[first]) {
+			ret++
+		}
+	}
+	return ret
+}
