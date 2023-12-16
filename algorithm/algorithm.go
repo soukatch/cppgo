@@ -390,3 +390,22 @@ func SwapRanges[T any](r1, r2 []T, first1, last1, first2 int) int {
 func IterSwap[T any](a, b *T) {
 	*a, *b = *b, *a
 }
+
+func Transform[T1, T2 any](r1 []T1, r2 []T2, first1, last1, d_first int, unary_op func(T1) T2) int {
+	for first1 != last1 {
+		r2[d_first] = unary_op(r1[first1])
+		first1++
+		d_first++
+	}
+	return d_first
+}
+
+func Transform2[T1, T2, T3 any](r1 []T1, r2 []T2, r3 []T3, first1, last1, first2, d_first int, binary_op func(T1, T2) T3) int {
+	for first1 != last1 {
+		r3[d_first] = binary_op(r1[first1], r2[first2])
+		first1++
+		first2++
+		d_first++
+	}
+	return d_first
+}
