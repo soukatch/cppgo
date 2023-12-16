@@ -425,3 +425,25 @@ func ReplaceIf[T any](r []T, first, last int, p func(T) bool, new_value T) {
 		}
 	}
 }
+
+func ReplaceCopy[T comparable](r1, r2 []T, first, last, d_first int, old_value, new_value T) int {
+	for ; first != last; first++ {
+		r2[d_first] = r1[first]
+		if r2[d_first] == old_value {
+			r2[d_first] = new_value
+		}
+		d_first++
+	}
+	return d_first
+}
+
+func ReplaceCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool, new_value T) int {
+	for ; first != last; first++ {
+		r2[d_first] = r1[first]
+		if p(r2[d_first]) {
+			r2[d_first] = new_value
+		}
+		d_first++
+	}
+	return d_first
+}
