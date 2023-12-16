@@ -409,3 +409,19 @@ func Transform2[T1, T2, T3 any](r1 []T1, r2 []T2, r3 []T3, first1, last1, first2
 	}
 	return d_first
 }
+
+func Replace[T comparable](r []T, first, last int, old_value, new_value T) {
+	for ; first != last; first++ {
+		if r[first] == old_value {
+			r[first] = new_value
+		}
+	}
+}
+
+func ReplaceIf[T any](r []T, first, last int, p func(T) bool, new_value T) {
+	for ; first != last; first++ {
+		if p(r[first]) {
+			r[first] = new_value
+		}
+	}
+}
