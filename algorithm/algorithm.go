@@ -364,3 +364,12 @@ func CopyN[T any](r1, r2 []T, first, count, result int) int {
 
 	return result
 }
+
+func CopyBackward[T any](r1, r2 []T, first, last, d_last int) int {
+	for first != last {
+		d_last--
+		last--
+		r2[d_last] = r1[last]
+	}
+	return d_last
+}
