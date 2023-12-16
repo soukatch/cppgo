@@ -461,3 +461,18 @@ func FillN[T any](r []T, first, count int, value T) int {
 	}
 	return first
 }
+
+func Generate[T any](r []T, first, last int, g func() T) {
+	for ; first != last; first++ {
+		r[first] = g()
+	}
+}
+
+func GenerateN[T any](r []T, first, count int, g func() T) int {
+	for i := 0; i < count; i++ {
+		r[first] = g()
+		first++
+	}
+
+	return first
+}
