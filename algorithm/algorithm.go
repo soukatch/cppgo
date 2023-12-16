@@ -476,3 +476,29 @@ func GenerateN[T any](r []T, first, count int, g func() T) int {
 
 	return first
 }
+
+func Remove[T comparable](r []T, first, last int, value T) int {
+	first = Find(r, first, last, value)
+	if first != last {
+		for i := first + 1; i != last; i++ {
+			if r[i] == value {
+				r[first] = r[i]
+				first++
+			}
+		}
+	}
+	return first
+}
+
+func RemoveIf[T any](r []T, first, last int, p func(T) bool) int {
+	first = FindIf(r, first, last, p)
+	if first != last {
+		for i := first + 1; i != last; i++ {
+			if !p(r[i]) {
+				r[first] = r[i]
+				first++
+			}
+		}
+	}
+	return first
+}
