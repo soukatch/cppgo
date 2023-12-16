@@ -502,3 +502,23 @@ func RemoveIf[T any](r []T, first, last int, p func(T) bool) int {
 	}
 	return first
 }
+
+func RemoveCopy[T comparable](r1, r2 []T, first, last, d_first int, value T) int {
+	for ; first != last; first++ {
+		if r1[first] != value {
+			r2[d_first] = r1[first]
+			d_first++
+		}
+	}
+	return d_first
+}
+
+func RemoveCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool) int {
+	for ; first != last; first++ {
+		if !p(r1[first]) {
+			r2[d_first] = r1[first]
+			d_first++
+		}
+	}
+	return d_first
+}
