@@ -373,3 +373,20 @@ func CopyBackward[T any](r1, r2 []T, first, last, d_last int) int {
 	}
 	return d_last
 }
+
+func Swap[T any](a, b *T) {
+	*a, *b = *b, *a
+}
+
+func SwapRanges[T any](r1, r2 []T, first1, last1, first2 int) int {
+	for first1 != last1 {
+		IterSwap(&r1[first1], &r2[first2])
+		first1++
+		first2++
+	}
+	return first2
+}
+
+func IterSwap[T any](a, b *T) {
+	*a, *b = *b, *a
+}
