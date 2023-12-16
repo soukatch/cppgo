@@ -447,3 +447,17 @@ func ReplaceCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool, 
 	}
 	return d_first
 }
+
+func Fill[T any](r []T, first, last int, value T) {
+	for ; first != last; first++ {
+		r[first] = value
+	}
+}
+
+func FillN[T any](r []T, first, count int, value T) int {
+	for i := 0; i < count; i++ {
+		r[first] = value
+		first++
+	}
+	return first
+}
