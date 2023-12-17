@@ -522,3 +522,38 @@ func RemoveCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool) i
 	}
 	return d_first
 }
+
+func Unique[T comparable](r []T, first, last int) int {
+	if first == last {
+		return last
+	}
+
+	result := first
+	for first++; first != last; first++ {
+		if r[result] != r[first] {
+			result++
+			// if result != first {
+			r[result] = r[first]
+			// }
+		}
+	}
+	return result + 1
+}
+
+func UniqueFunc[T any](r []T, first, last int, p func(T, T) bool) int {
+	if first == last {
+		return last
+	}
+
+	result := first
+	for first++; first != last; first++ {
+		if !p(r[result], r[first]) {
+			result++
+			// if result != first {
+			r[result] = r[first]
+			// }
+		}
+	}
+
+	return result + 1
+}
