@@ -154,6 +154,9 @@ func AdjacentFindFunc[T any](r []T, first, last int, p func(T, T) bool) int {
 	return last
 }
 
+// Returns the first mismatching pair of elements from two ranges: one defined
+// by [first1, last1) and another defined by [first2, first2 + last1 - first1).
+// Elements are compared using operator==.
 func Mismatch[T comparable](r1, r2 []T, first1, last1, first2 int) utility.Pair[int, int] {
 	for first1 != last1 && r1[first1] == r1[first2] {
 		first1++
@@ -163,6 +166,9 @@ func Mismatch[T comparable](r1, r2 []T, first1, last1, first2 int) utility.Pair[
 	return utility.MakePair(first1, first2)
 }
 
+// Returns the first mismatching pair of elements from two ranges: one defined
+// by [first1, last1) and another defined by [first2, first2 + last1 - first1).
+// Elements are compared using the given binary predicate p.
 func MismatchFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) bool) utility.Pair[int, int] {
 	for first1 != last1 && p(r1[first1], r2[first2]) {
 		first1++
@@ -172,6 +178,9 @@ func MismatchFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) boo
 	return utility.MakePair(first1, first2)
 }
 
+// Returns the first mismatching pair of elements from two ranges: one defined
+// by [first1, last1) and another defined by [first2, last). Elements are
+// compared using operator==.
 func Mismatch2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) utility.Pair[int, int] {
 	for first1 != last1 && first2 != last2 && r1[first1] == r1[first2] {
 		first1++
@@ -181,6 +190,9 @@ func Mismatch2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) utili
 	return utility.MakePair(first1, first2)
 }
 
+// Returns the first mismatching pair of elements from two ranges: one defined
+// by [first1, last1) and another defined by [first2, last). Elements are
+// compared using the given binary predicate p.
 func MismatchFunc2[T any](r1, r2 []T, first1, last1, first2, last2 int, p func(T, T) bool) utility.Pair[int, int] {
 	for first1 != last1 && first2 != last2 && p(r1[first1], r2[first2]) {
 		first1++
