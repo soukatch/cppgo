@@ -672,3 +672,31 @@ func Rotate[T any](r []T, first, middle, last int) int {
 func RotateCopy[T any](r1, r2 []T, first, n_first, last, d_first int) int {
 	return Copy(r1, r2, first, n_first, Copy(r1, r2, n_first, last, d_first))
 }
+
+func ShiftLeft[T any](r []T, first, last, n int) int {
+	if n == 0 {
+		return last
+	}
+
+	if n >= last-first {
+		return first
+	}
+
+	return Move(r, r, first+n, last, first)
+}
+
+func ShiftRight[T any](r []T, first, last, n int) int {
+	if n == 0 {
+		return last
+	}
+
+	if n >= last-first {
+		return first
+	}
+
+	for i := last - 1; i >= first+n; i-- {
+		r[i] = r[i-n]
+	}
+
+	return last
+}
