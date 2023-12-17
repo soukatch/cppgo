@@ -628,3 +628,11 @@ func Reverse[T any](r []T, first, last int) {
 		last--
 	}
 }
+
+func ReverseCopy[T any](r1, r2 []T, first, last, d_first int) int {
+	for ; first != last; d_first++ {
+		last--
+		r2[d_first] = r1[last]
+	}
+	return d_first
+}
