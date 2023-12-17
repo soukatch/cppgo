@@ -403,6 +403,14 @@ func CopyBackward[T any](r1, r2 []T, first, last, d_last int) int {
 	return d_last
 }
 
+func Move[T any](r1, r2 []T, first, last, d_first int) int {
+	return Copy(r1, r2, first, last, d_first)
+}
+
+func MoveBackward[T any](r1, r2 []T, first, last, d_first int) int {
+	return CopyBackward(r1, r2, first, last, d_first)
+}
+
 func Swap[T any](a, b *T) {
 	*a, *b = *b, *a
 }
