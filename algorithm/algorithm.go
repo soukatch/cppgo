@@ -3,8 +3,6 @@ package algorithm
 import (
 	"cmp"
 	"gocpp/utility"
-	"slices"
-	"sort"
 )
 
 // Returns an iterator to the beginning of the sequence represented by c.
@@ -37,53 +35,84 @@ func NoneOf[T any](r []T, first, last int, p func(T) bool) bool {
 
 // Searches for an element equal to value using operator==.
 func Find[T comparable](r []T, first, last int, value T) int {
-	return slices.Index(r[first:last], value)
+	for ; first != last; first++ {
+		if r[first] == value {
+			return first
+		}
+	}
+	return last
 }
 
 // Searches for an element for which predicate p returns true.
 func FindIf[T any](r []T, first, last int, p func(T) bool) int {
-	return slices.IndexFunc(r[first:last], p)
+	for ; first != last; first++ {
+		if p(r[first]) {
+			return first
+		}
+	}
+	return last
 }
 
 // Searches for an element for which predicate q returns false.
 func FindIfNot[T any](r []T, first, last int, q func(T) bool) int {
-	return slices.IndexFunc(r[first:last], func(x T) bool { return !q(x) })
+	for ; first != last; first++ {
+		if !q(r[first]) {
+			return first
+		}
+	}
+	return last
 }
 
 // Returns an iterator pointing to the first element in the range r[first, last)
-// such that element >= value, or last if no such element is found by invoking
-// slices.BinarySearch().
+// such that element >= value, or last if no such element is found.
 func LowerBound[T cmp.Ordered](r []T, first, last int, value T) int {
-	first, _ = slices.BinarySearch(r[first:last], value)
-	return first
+	for first < last-1 {
+		if it := first + (last-first)/2; r[it] < value {
+			first = it
+		} else {
+			last = it
+		}
+	}
+	return last
 }
 
 // Returns an iterator pointing to the first element in the range r[first, last)
-// such that comp(element, value) is false, or last if no such element is found
-// by invoking slices.BinarySearch().
-func LowerBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int) int {
-	first, _ = slices.BinarySearchFunc(r[first:last], value, comp)
-	return first
+// such that comp(element, value) is false, or last if no such element is found.
+func LowerBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) bool) int {
+	for first < last-1 {
+		if it := first + (last-first)/2; comp(r[it], value) {
+			first = it
+		} else {
+			last = it
+		}
+	}
+	return last
 }
 
 // Returns an iterator pointing to the first element in the range r[first, last)
-// such that value < element, or last if no such element is found, by invoking
-// sort.Search().
+// such that value < element, or last if no such element is found.
 func UpperBound[T cmp.Ordered](r []T, first, last int, value T) int {
-	first = sort.Search(len(r[first:last]), func(i int) bool {
-		return r[i] > value
-	})
-	return first
+	for first < last-1 {
+		if it := first + (last-first)/2; r[it] <= value {
+			first = it
+		} else {
+			last = it
+		}
+	}
+	return last
 }
 
 // Returns an iterator pointing to the first element in the range r[first, last)
-// such that comp(element, value) is true, or last if no such element is found,
-// by invoking sort.Search().
-func UpperBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) int) int {
-	first = sort.Search(len(r[first:last]), func(i int) bool {
-		return comp(r[i], value) == 1
-	})
-	return first
+// such that comp(element, value) is true, or last if no such element is found.
+func UpperBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) bool) int {
+	for first < last-1 {
+		if it := first + (last-first)/2; !comp(value, r[it]) {
+			first = it
+		} else {
+			last = it
+		}
+	}
+	return last
 }
 
 // Searches the range [first, last) for two consecutive equal elements. Returns
