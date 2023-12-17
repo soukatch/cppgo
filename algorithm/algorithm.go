@@ -557,3 +557,37 @@ func UniqueFunc[T any](r []T, first, last int, p func(T, T) bool) int {
 
 	return result + 1
 }
+
+func UniqueCopy[T comparable](r1, r2 []T, first, last, d_first int) int {
+	if first == last {
+		return d_first
+	}
+
+	r2[d_first] = r1[first]
+
+	for first++; first != last; first++ {
+		if !(r1[first] == r2[d_first]) {
+			d_first++
+			r2[d_first] = r1[first]
+		}
+	}
+
+	return d_first + 1
+}
+
+func UniqueCopyFunc[T any](r1, r2 []T, first, last, d_first int, p func(T, T) bool) int {
+	if first == last {
+		return d_first
+	}
+
+	r2[d_first] = r1[first]
+
+	for first++; first != last; first++ {
+		if !p(r1[first], r2[d_first]) {
+			d_first++
+			r2[d_first] = r1[first]
+		}
+	}
+
+	return d_first + 1
+}
