@@ -636,3 +636,31 @@ func ReverseCopy[T any](r1, r2 []T, first, last, d_first int) int {
 	}
 	return d_first
 }
+
+func Rotate[T any](r []T, first, middle, last int) int {
+	if first == middle {
+		return last
+	}
+
+	if middle == last {
+		return first
+	}
+
+	write, next_read := first, first
+
+	for read := middle; read != last; {
+		if write == next_read {
+			next_read = read
+		}
+		IterSwap(&r[write], &r[read])
+		write++
+		read++
+	}
+
+	Rotate(r, write, next_read, last)
+	return write
+}
+
+func RotateCopy[T any](r1, r2 []T, first, n_first, last, d_first int) int {
+	return Copy(r1, r2, first, n_first, Copy(r1, r2, n_first, last, d_first))
+}
