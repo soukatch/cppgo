@@ -591,3 +591,11 @@ func UniqueCopyFunc[T any](r1, r2 []T, first, last, d_first int, p func(T, T) bo
 
 	return d_first + 1
 }
+
+func Reverse[T any](r []T, first, last int) {
+	for last--; first < last; {
+		IterSwap(&r[first], &r[last])
+		first++
+		last--
+	}
+}
