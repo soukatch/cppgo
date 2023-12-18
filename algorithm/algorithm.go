@@ -33,7 +33,7 @@ func NoneOf[T any](r []T, first, last int, p func(T) bool) bool {
 	return FindIf(r, first, last, p) == last
 }
 
-// Searches for an element equal to value using operator==.
+// Searches for an element equal to value (using operator==).
 func Find[T comparable](r []T, first, last int, value T) int {
 	for ; first != last; first++ {
 		if r[first] == value {
@@ -115,7 +115,7 @@ func UpperBoundFunc[T any](r []T, first, last int, value T, comp func(T, T) bool
 	return last
 }
 
-// Searches the range [first, last) for two consecutive equal elements. Returns
+// Searches the range r[first, last) for two consecutive equal elements. Returns
 // an iterator to the first of the first pair of identical elements if found,
 // that is, the first iterator it such that r[it] == r[it + 1]; last otherwise.
 func AdjacentFind[T comparable](r []T, first, last int) int {
@@ -154,8 +154,33 @@ func AdjacentFindFunc[T any](r []T, first, last int, p func(T, T) bool) int {
 	return last
 }
 
+// Returns the number of elements in the range r[first, last) satisfying
+// specific criteria. Counts the elements that are equal to value
+// (using operator==).
+func Count[T comparable](r []T, first, last int, value T) int {
+	ret := int(0)
+	for ; first != last; first++ {
+		if r[first] == value {
+			ret++
+		}
+	}
+	return ret
+}
+
+// Returns the number of elements in the range r[first, last) satisfying specific
+// criteria. Counts elements for which predicate p returns true.
+func CountIf[T any](r []T, first, last int, p func(T) bool) int {
+	ret := int(0)
+	for ; first != last; first++ {
+		if p(r[first]) {
+			ret++
+		}
+	}
+	return ret
+}
+
 // Returns the first mismatching pair of elements from two ranges: one defined
-// by [first1, last1) and another defined by [first2, first2 + last1 - first1).
+// by r1[first1, last1) and another defined by r2[first2, first2 + last1 - first1).
 // Elements are compared using operator==.
 func Mismatch[T comparable](r1, r2 []T, first1, last1, first2 int) utility.Pair[int, int] {
 	for first1 != last1 && r1[first1] == r1[first2] {
@@ -167,7 +192,7 @@ func Mismatch[T comparable](r1, r2 []T, first1, last1, first2 int) utility.Pair[
 }
 
 // Returns the first mismatching pair of elements from two ranges: one defined
-// by [first1, last1) and another defined by [first2, first2 + last1 - first1).
+// by r1[first1, last1) and another defined by r2[first2, first2 + last1 - first1).
 // Elements are compared using the given binary predicate p.
 func MismatchFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) bool) utility.Pair[int, int] {
 	for first1 != last1 && p(r1[first1], r2[first2]) {
@@ -179,7 +204,7 @@ func MismatchFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) boo
 }
 
 // Returns the first mismatching pair of elements from two ranges: one defined
-// by [first1, last1) and another defined by [first2, last). Elements are
+// by r1[first1, last1) and another defined by r2[first2, last2). Elements are
 // compared using operator==.
 func Mismatch2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) utility.Pair[int, int] {
 	for first1 != last1 && first2 != last2 && r1[first1] == r1[first2] {
@@ -191,7 +216,7 @@ func Mismatch2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) utili
 }
 
 // Returns the first mismatching pair of elements from two ranges: one defined
-// by [first1, last1) and another defined by [first2, last). Elements are
+// by r1[first1, last1) and another defined by r2[first2, last2). Elements are
 // compared using the given binary predicate p.
 func MismatchFunc2[T any](r1, r2 []T, first1, last1, first2, last2 int, p func(T, T) bool) utility.Pair[int, int] {
 	for first1 != last1 && first2 != last2 && p(r1[first1], r2[first2]) {
@@ -202,6 +227,11 @@ func MismatchFunc2[T any](r1, r2 []T, first1, last1, first2, last2 int, p func(T
 	return utility.MakePair(first1, first2)
 }
 
+// Returns true if the range r1[first1, last1) is equal to the range r2[first2,
+// first2 + (last1 - first1)), and false otherwise. Two ranges are considered
+// equal if they have the same number of elements and, for every iterator i in
+// the range [first1, last1), *i equals *(first2 + (i - first1)). Uses
+// operator== to determine if two elements are equal.
 func Equal[T comparable](r1, r2 []T, first1, last1, first2 int) bool {
 	for first1 != last1 {
 		if r1[first1] != r2[first2] {
@@ -214,6 +244,11 @@ func Equal[T comparable](r1, r2 []T, first1, last1, first2 int) bool {
 	return true
 }
 
+// Returns true if the range r1[first1, last1) is equal to the range r2[first2,
+// first2 + (last1 - first1)), and false otherwise. Two ranges are considered
+// equal if they have the same number of elements and, for every iterator i in
+// the range [first1, last1), *i equals *(first2 + (i - first1)). Uses given
+// binary predicate p to determine if two elements are equal.
 func EqualFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) bool) bool {
 	for first1 != last1 {
 		if !p(r1[first1], r2[first2]) {
@@ -226,6 +261,11 @@ func EqualFunc[T any](r1, r2 []T, first1, last1, first2 int, p func(T, T) bool) 
 	return true
 }
 
+// Returns true if the range r1[first1, last1) is equal to the range r2[first2,
+// last2), and false otherwise. Two ranges are considered equal if they have
+// the same number of elements and, for every iterator i in the range [first1,
+// last1), *i equals *(first2 + (i - first1)). Uses operator== to determine if
+// two elements are equal.
 func Equal2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) bool {
 	for first1 != last1 && first2 != last2 {
 		if r1[first1] != r2[first2] {
@@ -238,6 +278,11 @@ func Equal2[T comparable](r1, r2 []T, first1, last1, first2, last2 int) bool {
 	return true
 }
 
+// Returns true if the range r1[first1, last1) is equal to the range r2[first2,
+// last2), and false otherwise. Two ranges are considered equal if they have
+// the same number of elements and, for every iterator i in the range [first1,
+// last1), *i equals *(first2 + (i - first1)). Uses given binary predicate p to
+// determine if two elements are equal.
 func EqualFunc2[T any](r1, r2 []T, first1, last1, first2, last2 int, p func(T, T) bool) bool {
 	for first1 != last1 && first2 != last2 {
 		if !p(r1[first1], r2[first2]) {
@@ -250,6 +295,8 @@ func EqualFunc2[T any](r1, r2 []T, first1, last1, first2, last2 int, p func(T, T
 	return true
 }
 
+// Searches for the first occurrence of the sequence of elements r2[s_first,
+// s_last) in the range r1[first, last). Elements are compared using operator==.
 func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) int {
 	for {
 		it := first
@@ -270,6 +317,9 @@ func Search[T comparable](r1, r2 []T, first, last, s_first, s_last int) int {
 	}
 }
 
+// Searches for the first occurrence of the sequence of elements r2[s_first,
+// s_last) in the range r1[first, last). Elements are compared using the given
+// binary predicate p.
 func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T) bool) int {
 	for {
 		it := first
@@ -290,6 +340,9 @@ func SearchFunc[T any](r1, r2 []T, first, last, s_first, s_last int, p func(T, T
 	}
 }
 
+// Searches the range r[first, last) for the first sequence of count identical
+// elements, each equal to the given value. Elements are compared using
+// operator==.
 func SearchN[T comparable](r []T, first, last, count int, value T) int {
 	if count <= 0 {
 		return first
@@ -320,6 +373,9 @@ func SearchN[T comparable](r []T, first, last, count int, value T) int {
 	return last
 }
 
+// Searches the range r[first, last) for the first sequence of count identical
+// elements, each equal to the given value. Elements are compared using the
+// given binary predicate p.
 func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) bool) int {
 	if count <= 0 {
 		return first
@@ -349,26 +405,10 @@ func SearchNFunc[T any](r []T, first, last, count int, value T, p func(T, T) boo
 	return last
 }
 
-func Count[T comparable](r []T, first, last int, value T) int {
-	ret := int(0)
-	for ; first != last; first++ {
-		if r[first] == value {
-			ret++
-		}
-	}
-	return ret
-}
-
-func CountIf[T any](r []T, first, last int, p func(T) bool) int {
-	ret := int(0)
-	for ; first != last; first++ {
-		if p(r[first]) {
-			ret++
-		}
-	}
-	return ret
-}
-
+// Copies the elements in the range, defined by r[first, last), to another range
+// beginning at r[d_first] (copy destination range). Copies all elements in the
+// range r[first, last) starting from first and proceeding to last. If d_first
+// is in r[first, last), the behavior is undefined.
 func Copy[T any](r1, r2 []T, first, last, d_first int) int {
 	for first != last {
 		r2[d_first] = r1[first]
@@ -379,6 +419,11 @@ func Copy[T any](r1, r2 []T, first, last, d_first int) int {
 	return d_first
 }
 
+// Copies the elements in the range, defined by r[first, last), to another range
+// beginning at r[d_first] (copy destination range). Only copies the elements
+// for which the predicate pred returns true. This copy algorithm is stable: the
+// relative order of the elements that are copied is preserved. If [first, last)
+// and the copy destination range overlaps, the behavior is undefined.
 func CopyIf[T any](r1, r2 []T, first, last, d_first int, pred func(T) bool) int {
 	for first != last {
 		if pred(r1[first]) {
@@ -391,6 +436,10 @@ func CopyIf[T any](r1, r2 []T, first, last, d_first int, pred func(T) bool) int 
 	return d_first
 }
 
+// Copies exactly count values from the range beginning at r1[first] to the range
+// beginning at r2[result]. Formally, for each integer 0 ≤ i < count, performs
+// *(result + i) = *(first + i). Overlap of ranges is formally permitted, but
+// leads to unpredictable ordering of the results.
 func CopyN[T any](r1, r2 []T, first, count, result int) int {
 	if count > 0 {
 		r2[result] = r1[first]
@@ -406,6 +455,10 @@ func CopyN[T any](r1, r2 []T, first, count, result int) int {
 	return result
 }
 
+// Copies the elements from the range r1[first, last) to another range ending at
+// r2[d_last]. The elements are copied in reverse order (the last element is
+// copied first), but their relative order is preserved. The behavior is
+// undefined if d_last is within (first, last).
 func CopyBackward[T any](r1, r2 []T, first, last, d_last int) int {
 	for first != last {
 		d_last--
@@ -415,18 +468,28 @@ func CopyBackward[T any](r1, r2 []T, first, last, d_last int) int {
 	return d_last
 }
 
+// Moves the elements in the range r1[first, last), to another range beginning
+// at r2[d_first], starting from r1[first] and proceeding to r1[last - 1].
 func Move[T any](r1, r2 []T, first, last, d_first int) int {
 	return Copy(r1, r2, first, last, d_first)
 }
 
+// Moves the elements from the range r1[first, last), to another range ending at
+// r2[d_last]. The elements are moved in reverse order (the last element is
+// moved first), but their relative order is preserved.
 func MoveBackward[T any](r1, r2 []T, first, last, d_first int) int {
 	return CopyBackward(r1, r2, first, last, d_first)
 }
 
+// Swaps the values a and b.
 func Swap[T any](a, b *T) {
 	*a, *b = *b, *a
 }
 
+// Exchanges elements between range r1[first1, last1) and another range starting
+// at r2[first2]. Precondition: the two ranges f1[first1, last1) and r2[first2,
+// last2) do not overlap,
+// where r2[last2] = r2[Next(first2, distance(first1, last1))].
 func SwapRanges[T any](r1, r2 []T, first1, last1, first2 int) int {
 	for first1 != last1 {
 		IterSwap(&r1[first1], &r2[first2])
@@ -436,10 +499,14 @@ func SwapRanges[T any](r1, r2 []T, first1, last1, first2 int) int {
 	return first2
 }
 
+// Swaps the values of the elements the given iterators are pointing to.
 func IterSwap[T any](a, b *T) {
 	*a, *b = *b, *a
 }
 
+// Applies the given function to a range and stores the result in another range,
+// keeping the original elements order and beginning at r2[d_first]. The unary
+// operation unary_op is applied to the range defined by r1[first1, last1).
 func Transform[T1, T2 any](r1 []T1, r2 []T2, first1, last1, d_first int, unary_op func(T1) T2) int {
 	for first1 != last1 {
 		r2[d_first] = unary_op(r1[first1])
@@ -449,6 +516,10 @@ func Transform[T1, T2 any](r1 []T1, r2 []T2, first1, last1, d_first int, unary_o
 	return d_first
 }
 
+// Applies the given function to a range and stores the result in another range,
+// keeping the original elements order and beginning at r2[d_first]. The binary
+// operation binary_op is applied to pairs of elements from two ranges: one
+// defined by [first1, last1) and the other beginning at first2.
 func Transform2[T1, T2, T3 any](r1 []T1, r2 []T2, r3 []T3, first1, last1, first2, d_first int, binary_op func(T1, T2) T3) int {
 	for first1 != last1 {
 		r3[d_first] = binary_op(r1[first1], r2[first2])
@@ -459,6 +530,9 @@ func Transform2[T1, T2, T3 any](r1 []T1, r2 []T2, r3 []T3, first1, last1, first2
 	return d_first
 }
 
+// Replaces all elements satisfying specific criteria with new_value in the
+// range r[first, last). Replaces all elements that are equal to old_value
+// (using operator==).
 func Replace[T comparable](r []T, first, last int, old_value, new_value T) {
 	for ; first != last; first++ {
 		if r[first] == old_value {
@@ -467,6 +541,9 @@ func Replace[T comparable](r []T, first, last int, old_value, new_value T) {
 	}
 }
 
+// Replaces all elements satisfying specific criteria with new_value in the
+// range r[first, last). Replaces all elements for which predicate p returns
+// true.
 func ReplaceIf[T any](r []T, first, last int, p func(T) bool, new_value T) {
 	for ; first != last; first++ {
 		if p(r[first]) {
@@ -475,6 +552,11 @@ func ReplaceIf[T any](r []T, first, last int, p func(T) bool, new_value T) {
 	}
 }
 
+// Copies the elements from the range r1[first, last) to another range beginning
+// at r2[d_first], while replacing all elements satisfying specific criteria
+// with new_value. If the source and destination ranges overlap, the behavior is
+// undefined. Replaces all elements that are equal to old_value
+// (using operator==).
 func ReplaceCopy[T comparable](r1, r2 []T, first, last, d_first int, old_value, new_value T) int {
 	for ; first != last; first++ {
 		r2[d_first] = r1[first]
@@ -486,6 +568,10 @@ func ReplaceCopy[T comparable](r1, r2 []T, first, last, d_first int, old_value, 
 	return d_first
 }
 
+// Copies the elements from the range r1[first, last) to another range beginning
+// at r2[d_first], while replacing all elements satisfying specific criteria
+// with new_value. If the source and destination ranges overlap, the behavior is
+// undefined. Replaces all elements for which predicate p returns true.
 func ReplaceCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool, new_value T) int {
 	for ; first != last; first++ {
 		r2[d_first] = r1[first]
@@ -497,12 +583,15 @@ func ReplaceCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool, 
 	return d_first
 }
 
+// Assigns the given value to the elements in the range r[first, last).
 func Fill[T any](r []T, first, last int, value T) {
 	for ; first != last; first++ {
 		r[first] = value
 	}
 }
 
+// Assigns the given value to the first count elements in the range beginning at
+// first if count > 0. Does nothing otherwise.
 func FillN[T any](r []T, first, count int, value T) int {
 	for i := 0; i < count; i++ {
 		r[first] = value
@@ -511,12 +600,17 @@ func FillN[T any](r []T, first, count int, value T) int {
 	return first
 }
 
+// Assigns each element in range r[first, last) a value generated by the given
+// function object g.
 func Generate[T any](r []T, first, last int, g func() T) {
 	for ; first != last; first++ {
 		r[first] = g()
 	}
 }
 
+// Assigns values, generated by given function object g, to the first count
+// elements in the range beginning at first, if count > 0. Does nothing
+// otherwise.
 func GenerateN[T any](r []T, first, count int, g func() T) int {
 	for i := 0; i < count; i++ {
 		r[first] = g()
@@ -526,6 +620,9 @@ func GenerateN[T any](r []T, first, count int, g func() T) int {
 	return first
 }
 
+// Removes all elements satisfying specific criteria from the range [first,
+// last) and returns a past-the-end iterator for the new end of the range.
+// Removes all elements that are equal to value (using operator==).
 func Remove[T comparable](r []T, first, last int, value T) int {
 	first = Find(r, first, last, value)
 	if first != last {
@@ -539,6 +636,9 @@ func Remove[T comparable](r []T, first, last int, value T) int {
 	return first
 }
 
+// Removes all elements satisfying specific criteria from the range [first,
+// last) and returns a past-the-end iterator for the new end of the range.
+// Removes all elements for which predicate p returns true.
 func RemoveIf[T any](r []T, first, last int, p func(T) bool) int {
 	first = FindIf(r, first, last, p)
 	if first != last {
@@ -552,6 +652,9 @@ func RemoveIf[T any](r []T, first, last int, p func(T) bool) int {
 	return first
 }
 
+// Copies elements from the range r1[first, last), to another range beginning at
+// r2[d_first], omitting the elements which satisfy specific criteria. Ignores
+// all elements that are equal to value.
 func RemoveCopy[T comparable](r1, r2 []T, first, last, d_first int, value T) int {
 	for ; first != last; first++ {
 		if r1[first] != value {
@@ -562,6 +665,9 @@ func RemoveCopy[T comparable](r1, r2 []T, first, last, d_first int, value T) int
 	return d_first
 }
 
+// Copies elements from the range r1[first, last), to another range beginning at
+// r2[d_first], omitting the elements which satisfy specific criteria. Ignores
+// all elements for which predicate p returns true.
 func RemoveCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool) int {
 	for ; first != last; first++ {
 		if !p(r1[first]) {
@@ -572,6 +678,12 @@ func RemoveCopyIf[T any](r1, r2 []T, first, last, d_first int, p func(T) bool) i
 	return d_first
 }
 
+// Eliminates all except the first element from every consecutive group of
+// equivalent elements from the range r[first, last) and returns a past-the-end
+// iterator for the new logical end of the range. Removing is done by shifting
+// the elements in the range in such a way that elements to be erased are
+// overwritten. Elements are compared using operator==. The behavior is
+// undefined if it is not an equivalence relation.
 func Unique[T comparable](r []T, first, last int) int {
 	if first == last {
 		return last
@@ -589,6 +701,12 @@ func Unique[T comparable](r []T, first, last int) int {
 	return result + 1
 }
 
+// Eliminates all except the first element from every consecutive group of
+// equivalent elements from the range r[first, last) and returns a past-the-end
+// iterator for the new logical end of the range. Removing is done by shifting
+// the elements in the range in such a way that elements to be erased are
+// overwritten. Elements are compared using the given binary predicate p. The
+// behavior is undefined if it is not an equivalence relation.
 func UniqueFunc[T any](r []T, first, last int, p func(T, T) bool) int {
 	if first == last {
 		return last
@@ -607,6 +725,11 @@ func UniqueFunc[T any](r []T, first, last int, p func(T, T) bool) int {
 	return result + 1
 }
 
+// Copies the elements from the range r[first, last), to another range beginning
+// at d_first in such a way that there are no consecutive equal elements. Only
+// the first element of each group of equal elements is copied. Elements are
+// compared using operator==. The behavior is undefined if it is not an
+// equivalence relation.
 func UniqueCopy[T comparable](r1, r2 []T, first, last, d_first int) int {
 	if first == last {
 		return d_first
@@ -624,6 +747,11 @@ func UniqueCopy[T comparable](r1, r2 []T, first, last, d_first int) int {
 	return d_first + 1
 }
 
+// Copies the elements from the range r[first, last), to another range beginning
+// at d_first in such a way that there are no consecutive equal elements. Only
+// the first element of each group of equal elements is copied. Elements are
+// compared using the given binary predicate p. The behavior is undefined if it
+// is not an equivalence relation.
 func UniqueCopyFunc[T any](r1, r2 []T, first, last, d_first int, p func(T, T) bool) int {
 	if first == last {
 		return d_first
@@ -641,6 +769,9 @@ func UniqueCopyFunc[T any](r1, r2 []T, first, last, d_first int, p func(T, T) bo
 	return d_first + 1
 }
 
+// Reverses the order of the elements in the range r[first, last). Behaves as if
+// applying IterSwap to every pair of iterators first + i and (last - i) - 1 for
+// each integer i in [​0​, Distance(first, last) / 2).
 func Reverse[T any](r []T, first, last int) {
 	for last--; first < last; {
 		IterSwap(&r[first], &r[last])
@@ -649,6 +780,12 @@ func Reverse[T any](r []T, first, last int) {
 	}
 }
 
+// Given  N as Distance(first, last). Copies the elements from the range [first,
+// last) to another range of  N elements beginning at d_first (destination
+// range) in such a way that the elements in the destination range are in
+// reverse order. Behaves as if by executing the assignment *(d_first + N - 1 -
+// i) = *(first + i) once for each integer i in [​0​, N). If [first, last) and
+// the destination range overlap, the behavior is undefined.
 func ReverseCopy[T any](r1, r2 []T, first, last, d_first int) int {
 	for ; first != last; d_first++ {
 		last--
@@ -657,6 +794,11 @@ func ReverseCopy[T any](r1, r2 []T, first, last, d_first int) int {
 	return d_first
 }
 
+// Performs a left rotation on a range of elements. Specifically, Rotate swaps
+// the elements in the range [first, last) in such a way that the elements in
+// r[first, middle) are placed after the elements in [middle, last) while the
+// orders of the elements in both ranges are preserved. If r[first, middle) or
+// r[middle, last) is not a valid range, the behavior is undefined.
 func Rotate[T any](r []T, first, middle, last int) int {
 	if first == middle {
 		return last
@@ -681,10 +823,20 @@ func Rotate[T any](r []T, first, middle, last int) int {
 	return write
 }
 
+// Copies the elements from the range r1[first, last), to another range
+// beginning at r2[d_first] in such a way, that the element *(n_first) becomes
+// the first element of the new range and *(n_first - 1) becomes the last
+// element. The behavior is undefined if either [first, n_first) or [n_first,
+// last) is not a valid range, or the source and destination ranges overlap.
 func RotateCopy[T any](r1, r2 []T, first, n_first, last, d_first int) int {
 	return Copy(r1, r2, first, n_first, Copy(r1, r2, n_first, last, d_first))
 }
 
+// Shifts the elements towards the beginning of the range. If n == 0 ||
+// n >= last - first, there are no effects. If n < 0, the behavior is
+// undefined. Otherwise, for every integer i in [​0​, last - first - n), moves
+// the element originally at position first + n + i to position first + i.
+// The moves are performed in increasing order of i starting from ​0​.
 func ShiftLeft[T any](r []T, first, last, n int) int {
 	if n == 0 {
 		return last
@@ -697,6 +849,10 @@ func ShiftLeft[T any](r []T, first, last, n int) int {
 	return Move(r, r, first+n, last, first)
 }
 
+// Shifts the elements towards the end of the range. If n == 0 || n >= last -
+// first, there are no effects. If n < 0, the behavior is undefined. Otherwise,
+// for every integer i in [​0​, last - first - n), moves the element originally
+// at position first + i to position first + n + i.
 func ShiftRight[T any](r []T, first, last, n int) int {
 	if n == 0 {
 		return last
