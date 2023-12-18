@@ -868,3 +868,80 @@ func ShiftRight[T any](r []T, first, last, n int) int {
 
 	return last
 }
+
+// Returns true if all elements in the range r[first, last) that satisfy the
+// predicate p appear before all elements that do not. Also returns true if
+// r[first, last) is empty.
+func IsPartitioned[T any](r []T, first, last int, p func(T) bool) bool {
+	for ; first != last; first++ {
+		if !p(r[first]) {
+			break
+		}
+	}
+
+	for ; first != last; first++ {
+		if p(r[first]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Reorders the elements in the range r[first, last) in such a way that all
+// elements for which the predicate p returns true precede the elements for
+// which predicate p returns false. Relative order of the elements is not
+// preserved. Returns iterator to the first element of the second group.
+func Partition[T any](r []T, first, last int, p func(T) bool) int {
+	first = FindIfNot(r, first, last, p)
+	if first == last {
+		return first
+	}
+
+	for i := first + 1; i != last; i++ {
+		if p(r[i]) {
+			IterSwap(&r[i], &r[first])
+			first++
+		}
+	}
+
+	return first
+}
+
+// Copies the elements from the range r1[first, last) to two different ranges
+// depending on the value returned by the predicate p. The elements that satisfy
+// the predicate p are copied to the range beginning at r2[d_first_true]. The
+// rest of the elements are copied to the range beginning at r2[d_first_false].
+// The behavior is undefined if the input range overlaps either of the output
+// ranges.
+func PartitionCopy[T any](r1, r2 []T, first, last, d_first_true, d_first_false int, p func(T) bool) utility.Pair[int, int] {
+	for ; first != last; first++ {
+		if p(r1[first]) {
+			r2[d_first_true] = r1[first]
+			d_first_true++
+		} else {
+			r2[d_first_false] = r1[first]
+			d_first_false++
+		}
+	}
+
+	return utility.MakePair(d_first_true, d_first_false)
+}
+
+// Examines the partitioned (as if by Partition) range r[first, last) and
+// locates the end of the first partition, that is, the first element that does
+// not satisfy p or last if all elements satisfy p.
+func PartitionPoint[T any](r []T, first, last int, p func(T) bool) int {
+	for length := last - first; 0 < length; {
+		half := length / 2
+		middle := first + half
+		if p(r[middle]) {
+			first = middle + 1
+			length -= half + 1
+		} else {
+			length = half
+		}
+	}
+
+	return first
+}
