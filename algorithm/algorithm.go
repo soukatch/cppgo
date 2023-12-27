@@ -952,7 +952,7 @@ func PartitionPoint[T any](r []T, first, last int, p func(T) bool) int {
 // that it + n is a valid iterator pointing to an element of the sequence,
 // comp(*(it + n), *it) evaluates to false. Elements are compared using
 // operator<.
-func IsSorted[T comparable](r []T, first, last int) bool {
+func IsSorted[T cmp.Ordered](r []T, first, last int) bool {
 	return IsSortedUntil(r, first, last) == last
 }
 
@@ -962,6 +962,36 @@ func IsSorted[T comparable](r []T, first, last int) bool {
 // that it + n is a valid iterator pointing to an element of the sequence,
 // comp(*(it + n), *it) evaluates to false. Elements are compared using the
 // given binary comparison function comp.
-func IsSortedFunc[T any](r []T, first, last, comp func(T, T) bool) bool {
-	return IsSortedUntilFunc(r, first, last, comp)
+func IsSortedFunc[T any](r []T, first, last int, comp func(T, T) bool) bool {
+	return IsSortedUntilFunc(r, first, last, comp) == last
+}
+
+// Examines the range [first, last) and finds the largest range beginning at
+// first in which the elements are sorted in non-descending order. A sequence
+// is sorted with respect to a comparator comp if for any iterator it pointing
+// to the sequence and any non-negative integer n such that it + n is a valid
+// iterator pointing to an element of the sequence, comp(*(it + n), *it)
+// evaluates to false. Elements are compared using operator<.
+func IsSortedUntil[T cmp.Ordered](r []T, first, last int) int {
+	return IsSortedUntilFunc(r, first, last, func(x, y T) bool { return x < y })
+}
+
+// Examines the range [first, last) and finds the largest range beginning at
+// first in which the elements are sorted in non-descending order. A sequence
+// is sorted with respect to a comparator comp if for any iterator it pointing
+// to the sequence and any non-negative integer n such that it + n is a valid
+// iterator pointing to an element of the sequence, comp(*(it + n), *it)
+// evaluates to false. Elements are compared using the given binary comparison
+// function comp.
+func IsSortedUntilFunc[T any](r []T, first, last int, comp func(T, T) bool) int {
+	if first != last {
+		next := first
+		for next++; next != last; next++ {
+			if comp(r[next], r[first]) {
+				return next
+			}
+			first = next
+		}
+	}
+	return last
 }
