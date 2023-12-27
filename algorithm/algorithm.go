@@ -945,3 +945,23 @@ func PartitionPoint[T any](r []T, first, last int, p func(T) bool) int {
 
 	return first
 }
+
+// Checks if the elements in range [first, last) are sorted in non-descending
+// order. A sequence is sorted with respect to a comparator comp if for any
+// iterator it pointing to the sequence and any non-negative integer n such
+// that it + n is a valid iterator pointing to an element of the sequence,
+// comp(*(it + n), *it) evaluates to false. Elements are compared using
+// operator<.
+func IsSorted[T comparable](r []T, first, last int) bool {
+	return IsSortedUntil(r, first, last) == last
+}
+
+// Checks if the elements in range [first, last) are sorted in non-descending
+// order. A sequence is sorted with respect to a comparator comp if for any
+// iterator it pointing to the sequence and any non-negative integer n such
+// that it + n is a valid iterator pointing to an element of the sequence,
+// comp(*(it + n), *it) evaluates to false. Elements are compared using the
+// given binary comparison function comp.
+func IsSortedFunc[T any](r []T, first, last, comp func(T, T) bool) bool {
+	return IsSortedUntilFunc(r, first, last, comp)
+}
