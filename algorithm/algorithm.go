@@ -995,3 +995,35 @@ func IsSortedUntilFunc[T any](r []T, first, last int, comp func(T, T) bool) int 
 	}
 	return last
 }
+
+// Returns true if the sorted range [first2, last2) is a subsequence of the
+// sorted range [first1, last1) (a subsequence need not be contiguous). Both
+// ranges must be sorted with operator<.
+func Includes[T cmp.Ordered](r1, r2 []T, first1, last1, first2, last2 int) bool {
+	for ; first2 != last2; first1++ {
+		if first1 == last1 || r2[first2] < r1[first1] {
+			return false
+		}
+		if !(r1[first1] < r2[first2]) {
+			first2++
+		}
+	}
+
+	return true
+}
+
+// Returns true if the sorted range [first2, last2) is a subsequence of the
+// sorted range [first1, last1) (a subsequence need not be contiguous). Both
+// ranges must be sorted with the given comparison function comp.
+func IncludesFunc[T any](r1, r2 []T, first1, last1, first2, last2 int, comp func(T, T) bool) bool {
+	for ; first2 != last2; first1++ {
+		if first1 == last1 || comp(r2[first2], r1[first1]) {
+			return false
+		}
+		if !comp(r1[first1], r2[first2]) {
+			first2++
+		}
+	}
+
+	return true
+}
